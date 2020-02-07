@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        img {
+            max-width: 90%;
+            max-height: 500px;
+        }
+
+        #data_container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-gap: 2px;
+            max-width: 912px;
+            margin: 0 auto;
+
+        }
+
+        article {
+            border: 1px solid #000;
+            height: auto;
+            padding: 8px;
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <section id="data_container"> </section>
+    <template>
+        <article>
+
+            <h3 class="navn efternavn"></h3>
+            <p class="alder"> </p>
+            <p class="sex"> Køn: </p>
+            <p class="religion">Religion: </p>
+            <p class="hobby">Hobby: </p>
+            <p class="kaeledyr">Kæledyr: </p>
+            <img src="" alt="">
+
+
+        </article>
+    </template>
+
+
+    <script>
+        const sheet = "https://spreadsheets.google.com/feeds/list/1XWWbfWszD7f4jHqp51V_oT3pkHuR-ceEUw4YtrvK7F0/od6/public/values?alt=json";
+        let allePersoner = [];
+        document.addEventListener("DOMContentLoaded", start);
+
+
+        function start() {
+            hentData();
+        }
+
+        async function hentData() {
+            const response = await fetch(sheet);
+            console.log(response);
+            allePersoner = await response.json();
+            console.log(allePersoner);
+            visPersoner();
+        }
+
+
+
+
+        function visPersoner() {
+            const container = document.querySelector("#data_container");
+            const personTemplate = document.querySelector("template");
+            allePersoner.feed.entry.forEach(person => {
+                let klon = personTemplate.cloneNode(true).content;
+                klon.querySelector("h3").textContent = `${person.gsx$navn.$t} ${person.gsx$efternavn.$t}`;
+                klon.querySelector("p").textContent += `${person.gsx$alder.$t} år`;
+                klon.querySelector("p + p").textContent += person.gsx$sex.$t;
+                klon.querySelector("p + p + p").textContent += person.gsx$religion.$t;
+                klon.querySelector("p + p + p + p").textContent += person.gsx$hobby.$t;
+                klon.querySelector("p + p + p + p + p").textContent += person.gsx$kaeledyr.$t;
+                klon.querySelector("img").src = person.gsx$billede.$t;
+
+                container.appendChild(klon);
+
+            })
+        }
+
+    </script>
+</body>
+
+</html>
